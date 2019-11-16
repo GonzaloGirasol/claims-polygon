@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Claims.Polygon.Web", "Claims.Polygon.Web\Claims.Polygon.Web.csproj", "{6795F8CA-9C0A-46A4-A54C-AEF9BC1F7AAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Claims.Polygon.Web", "Claims.Polygon.Web\Claims.Polygon.Web.csproj", "{6795F8CA-9C0A-46A4-A54C-AEF9BC1F7AAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Claims.Polygon.Tests", "Claims.Polygon.Tests\Claims.Polygon.Tests.csproj", "{1F288F49-6F14-4014-BE2A-0756D6B4473F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Claims.Polygon.Tests.Unit", "Claims.Polygon.Tests\Claims.Polygon.Tests.Unit.csproj", "{1F288F49-6F14-4014-BE2A-0756D6B4473F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
