@@ -13,4 +13,9 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Claims.Polygon.Core\Claims.Polygon.Core.csproj" />
+    <ProjectReference Include="..\Claims.Polygon.Services\Claims.Polygon.Services.csproj" />
+  </ItemGroup>
+
 </Project>

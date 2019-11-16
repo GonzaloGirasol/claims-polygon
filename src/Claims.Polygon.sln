@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Claims.Polygon.Web", "Claim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Claims.Polygon.Tests.Unit", "Claims.Polygon.Tests\Claims.Polygon.Tests.Unit.csproj", "{1F288F49-6F14-4014-BE2A-0756D6B4473F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Claims.Polygon.Core", "Claims.Polygon.Core\Claims.Polygon.Core.csproj", "{E5F74152-6BED-4D6A-8999-06FE298D8F73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Claims.Polygon.Services", "Claims.Polygon.Services\Claims.Polygon.Services.csproj", "{857062F5-0196-434E-BAD1-CAC303C53F78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{1F288F49-6F14-4014-BE2A-0756D6B4473F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F288F49-6F14-4014-BE2A-0756D6B4473F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F288F49-6F14-4014-BE2A-0756D6B4473F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5F74152-6BED-4D6A-8999-06FE298D8F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5F74152-6BED-4D6A-8999-06FE298D8F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5F74152-6BED-4D6A-8999-06FE298D8F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5F74152-6BED-4D6A-8999-06FE298D8F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{857062F5-0196-434E-BAD1-CAC303C53F78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{857062F5-0196-434E-BAD1-CAC303C53F78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{857062F5-0196-434E-BAD1-CAC303C53F78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{857062F5-0196-434E-BAD1-CAC303C53F78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
