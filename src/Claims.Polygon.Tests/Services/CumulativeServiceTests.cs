@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Claims.Polygon.Core;
@@ -83,33 +82,27 @@ namespace Claims.Polygon.Tests.Unit.Services
             var incrementalData = new List<Claim> { claim1, claim2, claim3 };
 
             // Act
-            var result = await service.GetCumulativeData(incrementalData);
+            var result = (await service.GetCumulativeData(incrementalData)).ToList();
 
             // Assert
-            var claim1Cumulative = claim1.Value.Value;
-            var claim2Cumulative = claim1.Value.Value + claim2.Value.Value;
-            var claim3Cumulative = claim2Cumulative + claim3.Value.Value;
+            var claim1Cumulative = result.First(c => 
+                c.Type == claim1.Type && 
+                c.OriginYear == claim1.OriginYear &&
+                c.DevelopmentYear == claim1.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim1.Type &&
-                    claim.OriginYear == claim1.OriginYear &&
-                    claim.DevelopmentYear == claim1.DevelopmentYear &&
-                    claim.Value.Value == claim1Cumulative));
+            var claim2Cumulative = result.First(c =>
+                c.Type == claim2.Type &&
+                c.OriginYear == claim2.OriginYear &&
+                c.DevelopmentYear == claim2.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim2.Type &&
-                    claim.OriginYear == claim2.OriginYear &&
-                    claim.DevelopmentYear == claim2.DevelopmentYear &&
-                    claim.Value.Value == claim2Cumulative));
+            var claim3Cumulative = result.First(c =>
+                c.Type == claim3.Type &&
+                c.OriginYear == claim3.OriginYear &&
+                c.DevelopmentYear == claim3.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim3.Type &&
-                    claim.OriginYear == claim3.OriginYear &&
-                    claim.DevelopmentYear == claim3.DevelopmentYear &&
-                    claim.Value.Value == claim3Cumulative));
+            Assert.AreEqual(claim1.Value, claim1Cumulative.Value);
+            Assert.AreEqual(claim1.Value + claim2.Value, claim2Cumulative.Value);
+            Assert.AreEqual(claim1.Value + claim2.Value + claim3.Value, claim3Cumulative.Value);
         }
 
         [Test]
@@ -138,49 +131,40 @@ namespace Claims.Polygon.Tests.Unit.Services
             };
 
             // Act
-            var result = await service.GetCumulativeData(incrementalData);
+            var result = (await service.GetCumulativeData(incrementalData)).ToList();
 
             // Assert
-            var claim1Cumulative = claim1.Value.Value;
-            var claim2Cumulative = claim1.Value.Value + claim2.Value.Value;
-            var claim3Cumulative = claim2Cumulative + claim3.Value.Value;
-            var claimACumulative = claimA.Value.Value;
-            var claimBCumulative = claimA.Value.Value + claimB.Value.Value;
+            var claim1Cumulative = result.First(c =>
+                c.Type == claim1.Type &&
+                c.OriginYear == claim1.OriginYear &&
+                c.DevelopmentYear == claim1.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim1.Type &&
-                    claim.OriginYear == claim1.OriginYear &&
-                    claim.DevelopmentYear == claim1.DevelopmentYear &&
-                    claim.Value.Value == claim1Cumulative));
+            var claim2Cumulative = result.First(c =>
+                c.Type == claim2.Type &&
+                c.OriginYear == claim2.OriginYear &&
+                c.DevelopmentYear == claim2.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim2.Type &&
-                    claim.OriginYear == claim2.OriginYear &&
-                    claim.DevelopmentYear == claim2.DevelopmentYear &&
-                    claim.Value.Value == claim2Cumulative));
+            var claim3Cumulative = result.First(c =>
+                c.Type == claim3.Type &&
+                c.OriginYear == claim3.OriginYear &&
+                c.DevelopmentYear == claim3.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim3.Type &&
-                    claim.OriginYear == claim3.OriginYear &&
-                    claim.DevelopmentYear == claim3.DevelopmentYear &&
-                    claim.Value.Value == claim3Cumulative));
+            var claimACumulative = result.First(c =>
+                c.Type == claimA.Type &&
+                c.OriginYear == claimA.OriginYear &&
+                c.DevelopmentYear == claimA.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claimA.Type &&
-                    claim.OriginYear == claimA.OriginYear &&
-                    claim.DevelopmentYear == claimA.DevelopmentYear &&
-                    claim.Value.Value == claimACumulative));
+            var claimBCumulative = result.First(c =>
+                c.Type == claimB.Type &&
+                c.OriginYear == claimB.OriginYear &&
+                c.DevelopmentYear == claimB.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claimB.Type &&
-                    claim.OriginYear == claimB.OriginYear &&
-                    claim.DevelopmentYear == claimB.DevelopmentYear &&
-                    claim.Value.Value == claimBCumulative));
+            Assert.AreEqual(claim1.Value, claim1Cumulative.Value);
+            Assert.AreEqual(claim1.Value + claim2.Value, claim2Cumulative.Value);
+            Assert.AreEqual(claim1.Value + claim2.Value + claim3.Value, claim3Cumulative.Value);
+
+            Assert.AreEqual(claimA.Value, claimACumulative.Value);
+            Assert.AreEqual(claimA.Value + claimB.Value, claimBCumulative.Value);
         }
 
         [Test]
@@ -200,42 +184,34 @@ namespace Claims.Polygon.Tests.Unit.Services
             var incrementalData = new List<Claim> { claim1, claim2, claimA, claimB };
 
             // Act
-            var result = await service.GetCumulativeData(incrementalData);
+            var result = (await service.GetCumulativeData(incrementalData)).ToList();
 
             // Assert
-            var claim1Cumulative = claim1.Value;
-            var claim2Cumulative = claim1.Value + claim2.Value;
+            var claim1Cumulative = result.First(c =>
+                c.Type == claim1.Type &&
+                c.OriginYear == claim1.OriginYear &&
+                c.DevelopmentYear == claim1.DevelopmentYear);
 
-            var claimACumulative = claimA.Value;
-            var claimBCumulative = claimA.Value + claimB.Value;
+            var claim2Cumulative = result.First(c =>
+                c.Type == claim2.Type &&
+                c.OriginYear == claim2.OriginYear &&
+                c.DevelopmentYear == claim2.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim1.Type &&
-                    claim.OriginYear == claim1.OriginYear &&
-                    claim.DevelopmentYear == claim1.DevelopmentYear &&
-                    claim.Value == claim1Cumulative.Value));
+            var claimACumulative = result.First(c =>
+                c.Type == claimA.Type &&
+                c.OriginYear == claimA.OriginYear &&
+                c.DevelopmentYear == claimA.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim2.Type &&
-                    claim.OriginYear == claim2.OriginYear &&
-                    claim.DevelopmentYear == claim2.DevelopmentYear &&
-                    claim.Value == claim2Cumulative));
+            var claimBCumulative = result.First(c =>
+                c.Type == claimB.Type &&
+                c.OriginYear == claimB.OriginYear &&
+                c.DevelopmentYear == claimB.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claimA.Type &&
-                    claim.OriginYear == claimA.OriginYear &&
-                    claim.DevelopmentYear == claimA.DevelopmentYear &&
-                    claim.Value == claimACumulative));
+            Assert.AreEqual(claim1.Value, claim1Cumulative.Value);
+            Assert.AreEqual(claim1.Value + claim2.Value, claim2Cumulative.Value);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claimB.Type &&
-                    claim.OriginYear == claimB.OriginYear &&
-                    claim.DevelopmentYear == claimB.DevelopmentYear &&
-                    claim.Value.Value == claimBCumulative));
+            Assert.AreEqual(claimA.Value, claimACumulative.Value);
+            Assert.AreEqual(claimA.Value + claimB.Value, claimBCumulative.Value);
         }
 
         [Test]
@@ -269,49 +245,40 @@ namespace Claims.Polygon.Tests.Unit.Services
             };
 
             // Act
-            var result = await service.GetCumulativeData(incrementalData);
+            var result = (await service.GetCumulativeData(incrementalData)).ToList();
 
             // Assert
-            var claim1Cumulative = claim1.Value.Value;
-            var claim2Cumulative = claim1.Value.Value + claim2.Value.Value;
-            var claim3Cumulative = claim2Cumulative + claim3.Value.Value;
-            var claimACumulative = claimA.Value.Value;
-            var claimBCumulative = claimA.Value.Value + claimB.Value.Value;
+            var claim1Cumulative = result.First(c =>
+                c.Type == claim1.Type &&
+                c.OriginYear == claim1.OriginYear &&
+                c.DevelopmentYear == claim1.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim1.Type &&
-                    claim.OriginYear == claim1.OriginYear &&
-                    claim.DevelopmentYear == claim1.DevelopmentYear &&
-                    claim.Value.Value == claim1Cumulative));
+            var claim2Cumulative = result.First(c =>
+                c.Type == claim2.Type &&
+                c.OriginYear == claim2.OriginYear &&
+                c.DevelopmentYear == claim2.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim2.Type &&
-                    claim.OriginYear == claim2.OriginYear &&
-                    claim.DevelopmentYear == claim2.DevelopmentYear &&
-                    claim.Value.Value == claim2Cumulative));
+            var claim3Cumulative = result.First(c =>
+                c.Type == claim3.Type &&
+                c.OriginYear == claim3.OriginYear &&
+                c.DevelopmentYear == claim3.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claim3.Type &&
-                    claim.OriginYear == claim3.OriginYear &&
-                    claim.DevelopmentYear == claim3.DevelopmentYear &&
-                    claim.Value.Value == claim3Cumulative));
+            var claimACumulative = result.First(c =>
+                c.Type == claimA.Type &&
+                c.OriginYear == claimA.OriginYear &&
+                c.DevelopmentYear == claimA.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claimA.Type &&
-                    claim.OriginYear == claimA.OriginYear &&
-                    claim.DevelopmentYear == claimA.DevelopmentYear &&
-                    claim.Value.Value == claimACumulative));
+            var claimBCumulative = result.First(c =>
+                c.Type == claimB.Type &&
+                c.OriginYear == claimB.OriginYear &&
+                c.DevelopmentYear == claimB.DevelopmentYear);
 
-            Assert.That(result,
-                Has.One.Matches<Claim>(claim =>
-                    claim.Type == claimB.Type &&
-                    claim.OriginYear == claimB.OriginYear &&
-                    claim.DevelopmentYear == claimB.DevelopmentYear &&
-                    claim.Value.Value == claimBCumulative));
+            Assert.AreEqual(claim1.Value, claim1Cumulative.Value);
+            Assert.AreEqual(claim1.Value + claim2.Value, claim2Cumulative.Value);
+            Assert.AreEqual(claim1.Value + claim2.Value + claim3.Value, claim3Cumulative.Value);
+
+            Assert.AreEqual(claimA.Value, claimACumulative.Value);
+            Assert.AreEqual(claimA.Value + claimB.Value, claimBCumulative.Value);
         }
     }
 }
