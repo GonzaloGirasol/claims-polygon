@@ -19,9 +19,25 @@ namespace Claims.Polygon.Services
 
             var cumulativeData = new List<Claim>();
 
-            var orderedClaims = incrementalData.OrderBy(d => d.OriginYear)
-                .ThenBy(d => d.DevelopmentYear)
-                .ToList();
+            var groupedClaims = incrementalData.GroupBy(data => new { data.Type, data.OriginYear });
+            foreach (var group in groupedClaims)
+            {
+                await Task.Run(() =>
+                {
+                    var cumulativeForYear = GetCumulativeDataForOriginYear(group);
+                    cumulativeData.AddRange(cumulativeForYear);
+                });
+            }
+
+            return cumulativeData;
+        }
+
+        private static IEnumerable<Claim> GetCumulativeDataForOriginYear(IEnumerable<Claim> originYear)
+        {
+            var cumulativeData = new List<Claim>();
+
+            var orderedClaims = originYear.OrderBy(d => d.OriginYear)
+                .ThenBy(d => d.DevelopmentYear);
 
             foreach (var claim in orderedClaims)
             {
@@ -32,7 +48,7 @@ namespace Claims.Polygon.Services
                     // find the previous development year
                     var previousClaim = cumulativeData.SingleOrDefault(c =>
                         c.Type == claim.Type &&
-                        c.OriginYear == claim.OriginYear && 
+                        c.OriginYear == claim.OriginYear &&
                         c.DevelopmentYear == claim.DevelopmentYear - 1);
 
                     cumulativeValue += previousClaim?.Value;
