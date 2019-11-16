@@ -1,10 +1,11 @@
-﻿namespace Claims.Polygon.Services.Interfaces
-{
-    using System.Collections.Generic;
-    using Core;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Claims.Polygon.Core;
 
+namespace Claims.Polygon.Services.Interfaces
+{
     public interface ICumulativeService
     {
-        IEnumerable<Claim> GetCumulativeData(IEnumerable<Claim> incrementalData);
+        Task<IEnumerable<Claim>> GetCumulativeData(IEnumerable<Claim> incrementalData);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Claims.Polygon.Core;
 using Claims.Polygon.Core.Enums;
 using Claims.Polygon.Core.Exceptions;
@@ -9,7 +10,7 @@ namespace Claims.Polygon.Services
 {
     public class CumulativeService : ICumulativeService
     {
-        public IEnumerable<Claim> GetCumulativeData(IEnumerable<Claim> incrementalData)
+        public async Task<IEnumerable<Claim>> GetCumulativeData(IEnumerable<Claim> incrementalData)
         {
             if (incrementalData == null)
             {
