@@ -19,7 +19,7 @@ namespace Claims.Polygon.Services
 
             var cumulativeData = new List<Claim>();
 
-            var groupedClaims = incrementalData.GroupBy(data => new { data.Type, data.OriginYear });
+            var groupedClaims = incrementalData.GroupBy(data => new { Type = data.Type, data.OriginYear });
             foreach (var group in groupedClaims)
             {
                 await Task.Run(() =>

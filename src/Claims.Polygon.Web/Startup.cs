@@ -1,5 +1,8 @@
+using Claims.Polygon.Services;
+
 namespace Claims.Polygon.Web
 {
+    using Claims.Polygon.Services.Interfaces;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -19,6 +22,8 @@ namespace Claims.Polygon.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+
+            services.AddTransient<ICsvParser, CsvParser>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

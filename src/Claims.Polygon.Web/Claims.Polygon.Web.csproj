@@ -4,8 +4,8 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
-
   <ItemGroup>
+    <ProjectReference Include="..\Claims.Polygon.Services\Claims.Polygon.Services.csproj" />
   </ItemGroup>
 
 </Project>
