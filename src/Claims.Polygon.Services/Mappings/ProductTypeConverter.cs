@@ -22,7 +22,7 @@ namespace Claims.Polygon.Services.Mappings
                 : displayNames[text.ToLower()];
         }
 
-        public override string ConvertToString(object value, IWriterRow row,MemberMapData memberMapData)
+        public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
         {
             return value.GetType()
                 .GetMember(value.ToString())

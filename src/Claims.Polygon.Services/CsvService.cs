@@ -32,6 +32,7 @@ namespace Claims.Polygon.Services
 
             using var csvWriter = new CsvWriter(writer);
             csvWriter.Configuration.HasHeaderRecord = false;
+            csvWriter.Configuration.RegisterClassMap<CumulativeValueMap>();
 
             csvWriter.WriteRecord(cumulativeData.Header);
             await csvWriter.NextRecordAsync();
