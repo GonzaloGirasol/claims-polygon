@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Claims.Polygon.Core.Constants;
 using Claims.Polygon.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,8 @@ namespace Claims.Polygon.Web.Pages
 
             var memoryStream = new MemoryStream(temp);
 
-            return new FileStreamResult(memoryStream, "text/csv") {FileDownloadName = "cumulative.csv"};
+            return new FileStreamResult(memoryStream, FileUpload.CsvContentType)
+                {FileDownloadName = FileUpload.CumulativeCsvFileName};
         }
     }
 }
