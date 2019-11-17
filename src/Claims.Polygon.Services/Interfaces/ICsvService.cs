@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Claims.Polygon.Core;
+using Claims.Polygon.Core.Csv;
 using Microsoft.AspNetCore.Http;
 
 namespace Claims.Polygon.Services.Interfaces
@@ -9,6 +10,6 @@ namespace Claims.Polygon.Services.Interfaces
     {
         Task<IEnumerable<Claim>> GetIncrementalClaims(IFormFile csvFile);
 
-        Task<byte[]> GetCumulativeCsv(IEnumerable<Claim> cumulativeData);
+        Task<byte[]> GetCumulativeCsv(CumulativeData cumulativeData);
     }
 }

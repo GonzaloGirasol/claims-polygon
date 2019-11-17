@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using Claims.Polygon.Core.Enums;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -20,7 +21,16 @@ namespace Claims.Polygon.Services.Mappings
                 ? parsedProductType
                 : displayNames[text.ToLower()];
         }
-        
+
+        public override string ConvertToString(object value, IWriterRow row,MemberMapData memberMapData)
+        {
+            return value.GetType()
+                .GetMember(value.ToString())
+                .First()
+                .GetCustomAttribute<DisplayAttribute>()
+                .GetName();
+        }
+
         private IDictionary GetEnumDisplayNames()
         {
             IDictionary displayNameMapping = new Dictionary<string, ProductType>();

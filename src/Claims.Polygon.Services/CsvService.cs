@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Claims.Polygon.Core;
+using Claims.Polygon.Core.Csv;
 using Claims.Polygon.Services.Interfaces;
 using Claims.Polygon.Services.Mappings;
 using CsvHelper;
@@ -25,14 +25,24 @@ namespace Claims.Polygon.Services
             return result;
         }
 
-        public async Task<byte[]> GetCumulativeCsv(IEnumerable<Claim> cumulativeData)
+        public async Task<byte[]> GetCumulativeCsv(CumulativeData cumulativeData)
         {
             await using var memoryStream = new MemoryStream();
             await using var writer = new StreamWriter(memoryStream);
-            using var csvWriter = new CsvWriter(writer);
 
-            csvWriter.WriteRecords(cumulativeData);
-            writer.Flush();
+            using var csvWriter = new CsvWriter(writer);
+            csvWriter.Configuration.HasHeaderRecord = false;
+
+            csvWriter.WriteRecord(cumulativeData.Header);
+            await csvWriter.NextRecordAsync();
+
+            foreach (var value in cumulativeData.Values)
+            {
+                csvWriter.WriteRecord(value);
+                await csvWriter.NextRecordAsync();
+            }
+
+            await writer.FlushAsync();
 
             return memoryStream.ToArray();
         }
