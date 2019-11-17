@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Claims.Polygon.Services.Interfaces
 {
-    public interface ICsvParser
+    public interface ICsvService
     {
         Task<IEnumerable<Claim>> GetIncrementalClaims(IFormFile csvFile);
     }

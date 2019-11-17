@@ -8,14 +8,16 @@ namespace Claims.Polygon.Web.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ICsvParser _csvParser;
+        private readonly ICsvService _csvService;
+        private readonly ICumulativeService _cumulativeService;
 
         [BindProperty]
         public IFormFile CsvFile { get; set; }
 
-        public IndexModel(ICsvParser csvParser)
+        public IndexModel(ICsvService csvService, ICumulativeService cumulativeService)
         {
-            _csvParser = csvParser;
+            _csvService = csvService;
+            _cumulativeService = cumulativeService;
         }
 
         public IActionResult OnGet()
@@ -25,7 +27,10 @@ namespace Claims.Polygon.Web.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            await _csvParser.GetIncrementalClaims(CsvFile);
+            var incrementalClaims = await _csvService.GetIncrementalClaims(CsvFile);
+
+            var cumulativeClaims = await _cumulativeService.GetCumulativeData(incrementalClaims);
+
             return Page();
         }
     }
