@@ -27,7 +27,139 @@ namespace Claims.Polygon.Tests.Unit.Services
         }
 
         [Test]
-        public async Task GetCumulativeData_WithProductType_ReturnsMatchingProductType([Values] ProductType productType)
+        public async Task GetCumulativeData_ShouldReturn_ExpectedHeader()
+        {
+            // Arrange
+            var service = new CumulativeService();
+
+            const int originYear = 2000;
+
+            var claim1 = new Claim { OriginYear = originYear, DevelopmentYear = originYear, Value = 5, Type = ProductType.Comp };
+            var claim2 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 1, Value = 10, Type = ProductType.Comp };
+            var claim3 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 2, Value = 15, Type = ProductType.Comp };
+
+            // Act
+            var result = await service.GetCumulativeData(new List<Claim> {claim1, claim2, claim3});
+
+            // Assert
+            Assert.That(result.Header.MinOriginYear, Is.EqualTo(originYear));
+            Assert.That(result.Header.DevelopmentYears, Is.EqualTo(claim3.DevelopmentYear - originYear + 1));
+        }
+
+        [Test]
+        public async Task GetCumulativeData_ShouldReturn_ExpectedValues()
+        {
+            // Arrange
+            var service = new CumulativeService();
+
+            const int originYear = 2000;
+
+            var claim1 = new Claim { OriginYear = originYear, DevelopmentYear = originYear, Value = 5, Type = ProductType.Comp };
+            var claim2 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 1, Value = 10, Type = ProductType.Comp };
+            var claim3 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 2, Value = 15, Type = ProductType.Comp };
+
+            // Act
+            var result = await service.GetCumulativeData(new List<Claim> { claim1, claim2, claim3 });
+
+            // Assert
+            var expectedValues = new List<double>
+            {
+                claim1.Value.Value, 
+                claim1.Value.Value + claim2.Value.Value,
+                claim1.Value.Value + claim2.Value.Value + claim3.Value.Value
+            };
+
+            Assert.AreEqual(expectedValues, result.CumulativeValues.First().Values);
+        }
+
+        [Test]
+        public async Task GetCumulativeData_ShouldReturn_ExpectedCumulativeValuesCount()
+        {
+            // Arrange
+            var service = new CumulativeService();
+
+            const int originYear = 2000;
+
+            var claim1 = new Claim { OriginYear = originYear, DevelopmentYear = originYear, Value = 5, Type = ProductType.Comp };
+            var claim2 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 1, Value = 10, Type = ProductType.Comp };
+
+            var claimA = new Claim { OriginYear = originYear, DevelopmentYear = originYear, Value = 5, Type = ProductType.NonComp };
+            var claimB = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 1, Value = 10, Type = ProductType.NonComp };
+
+            var incrementalData = new List<Claim> {claim1, claim2, claimA, claimB};
+
+            var expectedCount = incrementalData.GroupBy(data => data.Type).Select(g => g.Key).Count();
+
+            // Act
+            var result = await service.GetCumulativeData(incrementalData);
+
+            // Assert
+            Assert.AreEqual(expectedCount, result.CumulativeValues.Count());
+        }
+
+        [Test]
+        public async Task GetCumulativeData_ShouldReturn_EqualValues_ForAllCumulativeValues()
+        {
+            // Arrange
+            var service = new CumulativeService();
+
+            const int originYear = 2000;
+            const int originYear2 = originYear + 1;
+
+            // span over 3 development years - missing 2nd year.
+            var claim1 = new Claim { OriginYear = originYear, DevelopmentYear = originYear, Value = 5, Type = ProductType.Comp };
+            var claim2 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 2, Value = 10, Type = ProductType.Comp };
+
+            var claimA = new Claim { OriginYear = originYear2, DevelopmentYear = originYear2, Value = 5, Type = ProductType.NonComp };
+            var claimB = new Claim { OriginYear = originYear2, DevelopmentYear = originYear2 + 1, Value = 10, Type = ProductType.NonComp };
+
+            var incrementalData = new List<Claim> { claim1, claim2, claimA, claimB };
+
+            const int expectedCount = 5;
+
+            // Act
+            var result = await service.GetCumulativeData(incrementalData);
+
+            // Assert
+            var comps = result.CumulativeValues.First(c => c.Type == ProductType.Comp);
+            var nonComps = result.CumulativeValues.First(c => c.Type == ProductType.NonComp);
+
+            Assert.AreEqual(expectedCount, comps.Values.Count());
+            Assert.AreEqual(expectedCount, nonComps.Values.Count());
+        }
+
+        [Test]
+        public async Task GetCumulativeData_ShouldReturn_CumulativeValues_WithDefaultValue_IfMissing()
+        {
+            // Arrange
+            var service = new CumulativeService();
+
+            const int originYear = 2000;
+            const int originYear2 = originYear + 1;
+
+            var claim1 = new Claim { OriginYear = originYear, DevelopmentYear = originYear, Value = 5, Type = ProductType.Comp };
+            var claim2 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 1, Value = 10, Type = ProductType.Comp };
+            var claim3 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 2, Value = 15, Type = ProductType.Comp };
+
+            var claimA = new Claim { OriginYear = originYear2, DevelopmentYear = originYear2, Value = 5, Type = ProductType.NonComp };
+            var claimB = new Claim { OriginYear = originYear2, DevelopmentYear = originYear2 + 1, Value = 10, Type = ProductType.NonComp };
+
+            var incrementComps = new List<Claim> {claim1, claim2, claim3};
+            var incrementNonComps = new List<Claim> {claimA, claimB};
+
+            // Act
+            var result = await service.GetCumulativeData(incrementComps.Concat(incrementNonComps));
+
+            // Assert
+            var comps = result.CumulativeValues.First(c => c.Type == ProductType.Comp);
+            var nonComps = result.CumulativeValues.First(c => c.Type == ProductType.NonComp);
+
+            Assert.AreEqual(incrementNonComps.Count, comps.Values.Count(value => value == default));
+            Assert.AreEqual(incrementComps.Count, nonComps.Values.Count(value => value == default));
+        }
+
+        [Test]
+        public async Task GetCumulativeClaims_WithProductType_ReturnsMatchingProductType([Values] ProductType productType)
         {
             // Arrange
             var service = new CumulativeService();
@@ -36,14 +168,14 @@ namespace Claims.Polygon.Tests.Unit.Services
             var claim2 = new Claim { OriginYear = 1, DevelopmentYear = 2, Value = 2, Type = productType };
 
             // Act
-            var result = await service.GetCumulativeData(new List<Claim> { claim1, claim2 });
+            var result = await service.GetCumulativeClaims(new List<Claim> { claim1, claim2 });
 
             // Assert
             Assert.That(result, Has.All.Matches<Claim>(claim => claim.Type == productType));
         }
 
         [Test]
-        public async Task GetCumulativeData_WithMultipleProductType_ReturnsMatchingProductType()
+        public async Task GetCumulativeClaims_WithMultipleProductType_ReturnsMatchingProductType()
         {
             // Arrange
             var service = new CumulativeService();
@@ -56,7 +188,7 @@ namespace Claims.Polygon.Tests.Unit.Services
             var incrementalData = new List<Claim> { claim1, claim2, claim3, claim4 };
 
             // Act
-            var result = (await service.GetCumulativeData(incrementalData)).ToList();
+            var result = (await service.GetCumulativeClaims(incrementalData)).ToList();
 
             // Assert
             var expectedComp = incrementalData.Count(i => i.Type == ProductType.Comp);
@@ -68,7 +200,7 @@ namespace Claims.Polygon.Tests.Unit.Services
         }
 
         [Test]
-        public async Task GetCumulativeData_WithinSameOriginYear_ReturnsCumulativeData([Values] ProductType productType)
+        public async Task GetCumulativeClaims_WithinSameOriginYear_ReturnsCumulativeData([Values] ProductType productType)
         {
             // Arrange
             var service = new CumulativeService();
@@ -82,7 +214,7 @@ namespace Claims.Polygon.Tests.Unit.Services
             var incrementalData = new List<Claim> { claim1, claim2, claim3 };
 
             // Act
-            var result = (await service.GetCumulativeData(incrementalData)).ToList();
+            var result = (await service.GetCumulativeClaims(incrementalData)).ToList();
 
             // Assert
             var claim1Cumulative = result.First(c => 
@@ -106,7 +238,7 @@ namespace Claims.Polygon.Tests.Unit.Services
         }
 
         [Test]
-        public async Task GetCumulativeData_MultipleOriginYear_ReturnsCumulativeData([Values] ProductType productType)
+        public async Task GetCumulativeClaims_MultipleOriginYear_ReturnsCumulativeData([Values] ProductType productType)
         {
             // Arrange
             var service = new CumulativeService();
@@ -131,7 +263,7 @@ namespace Claims.Polygon.Tests.Unit.Services
             };
 
             // Act
-            var result = (await service.GetCumulativeData(incrementalData)).ToList();
+            var result = (await service.GetCumulativeClaims(incrementalData)).ToList();
 
             // Assert
             var claim1Cumulative = result.First(c =>
@@ -168,7 +300,7 @@ namespace Claims.Polygon.Tests.Unit.Services
         }
 
         [Test]
-        public async Task GetCumulativeData_MultipleProductType_WithinSameOriginYear_ReturnsCumulativeData()
+        public async Task GetCumulativeClaims_MultipleProductType_WithinSameOriginYear_ReturnsCumulativeData()
         {
             // Arrange
             var service = new CumulativeService();
@@ -184,7 +316,7 @@ namespace Claims.Polygon.Tests.Unit.Services
             var incrementalData = new List<Claim> { claim1, claim2, claimA, claimB };
 
             // Act
-            var result = (await service.GetCumulativeData(incrementalData)).ToList();
+            var result = (await service.GetCumulativeClaims(incrementalData)).ToList();
 
             // Assert
             var claim1Cumulative = result.First(c =>
@@ -215,7 +347,7 @@ namespace Claims.Polygon.Tests.Unit.Services
         }
 
         [Test]
-        public async Task GetCumulativeData_MultipleOriginYearAndProductType_ReturnsCumulativeData()
+        public async Task GetCumulativeClaims_MultipleOriginYearAndProductType_ReturnsCumulativeData()
         {
             // Arrange
             var service = new CumulativeService();
@@ -245,7 +377,7 @@ namespace Claims.Polygon.Tests.Unit.Services
             };
 
             // Act
-            var result = (await service.GetCumulativeData(incrementalData)).ToList();
+            var result = (await service.GetCumulativeClaims(incrementalData)).ToList();
 
             // Assert
             var claim1Cumulative = result.First(c =>
@@ -282,7 +414,7 @@ namespace Claims.Polygon.Tests.Unit.Services
         }
 
         [Test]
-        public async Task GetCumulativeData_MissingDevelopmentYear_ReturnsCumulativeData_WithCompleteDevelopmentYears()
+        public async Task GetCumulativeClaims_MissingDevelopmentYear_ReturnsCumulativeData_WithCompleteDevelopmentYears()
         {
             // Arrange
             var service = new CumulativeService();
@@ -295,8 +427,8 @@ namespace Claims.Polygon.Tests.Unit.Services
             var incrementalData = new List<Claim> { claim1, claim4 };
 
             // Act
-            var result = (await service.GetCumulativeData(incrementalData)).ToList();
-
+            var result = (await service.GetCumulativeClaims(incrementalData)).ToList();
+            
             // Assert
             var claim1Cumulative = result.First(c =>
                 c.OriginYear == claim1.OriginYear &&

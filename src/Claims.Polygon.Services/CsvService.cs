@@ -36,7 +36,7 @@ namespace Claims.Polygon.Services
             csvWriter.WriteRecord(cumulativeData.Header);
             await csvWriter.NextRecordAsync();
 
-            foreach (var value in cumulativeData.Values)
+            foreach (var value in cumulativeData.CumulativeValues)
             {
                 csvWriter.WriteRecord(value);
                 await csvWriter.NextRecordAsync();

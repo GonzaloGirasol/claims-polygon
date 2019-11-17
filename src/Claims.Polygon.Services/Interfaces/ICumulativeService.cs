@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Claims.Polygon.Core;
+using Claims.Polygon.Core.Csv;
 
 namespace Claims.Polygon.Services.Interfaces
 {
     public interface ICumulativeService
     {
-        Task<IEnumerable<Claim>> GetCumulativeData(IEnumerable<Claim> incrementalData);
+        Task<CumulativeData> GetCumulativeData(IEnumerable<Claim> incrementalData);
     }
 }
