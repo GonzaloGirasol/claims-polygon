@@ -6,13 +6,10 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>Upload a CSV file</p>
     
     <form method="post" enctype="multipart/form-data">
         <dl>
-            <dt>
-                <label asp-for="CsvFile"></label>
-            </dt>
             <dd>
                 <input asp-for="CsvFile" type="file">
                 <span asp-validation-for="CsvFile"></span>
