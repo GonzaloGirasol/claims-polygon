@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Claims.Polygon.Core;
 using Claims.Polygon.Services.Interfaces;
@@ -22,6 +23,18 @@ namespace Claims.Polygon.Services
             var result = await Task.Run(() => csvReader.GetRecords<Claim>().ToList());
 
             return result;
+        }
+
+        public async Task<byte[]> GetCumulativeCsv(IEnumerable<Claim> cumulativeData)
+        {
+            await using var memoryStream = new MemoryStream();
+            await using var writer = new StreamWriter(memoryStream);
+            using var csvWriter = new CsvWriter(writer);
+
+            csvWriter.WriteRecords(cumulativeData);
+            writer.Flush();
+
+            return memoryStream.ToArray();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Claims.Polygon.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,11 @@ namespace Claims.Polygon.Web.Pages
 
             var cumulativeClaims = await _cumulativeService.GetCumulativeData(incrementalClaims);
 
-            return Page();
+            var temp = await _csvService.GetCumulativeCsv(cumulativeClaims);
+
+            var memoryStream = new MemoryStream(temp);
+
+            return new FileStreamResult(memoryStream, "text/csv") {FileDownloadName = "cumulative.csv"};
         }
     }
 }

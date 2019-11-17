@@ -8,5 +8,7 @@ namespace Claims.Polygon.Services.Interfaces
     public interface ICsvService
     {
         Task<IEnumerable<Claim>> GetIncrementalClaims(IFormFile csvFile);
+
+        Task<byte[]> GetCumulativeCsv(IEnumerable<Claim> cumulativeData);
     }
 }
