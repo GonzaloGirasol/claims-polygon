@@ -280,5 +280,44 @@ namespace Claims.Polygon.Tests.Unit.Services
             Assert.AreEqual(claimA.Value, claimACumulative.Value);
             Assert.AreEqual(claimA.Value + claimB.Value, claimBCumulative.Value);
         }
+
+        [Test]
+        public async Task GetCumulativeData_MissingDevelopmentYear_ReturnsCumulativeData_WithCompleteDevelopmentYears()
+        {
+            // Arrange
+            var service = new CumulativeService();
+
+            const int originYear = 2000;
+
+            var claim1 = new Claim { OriginYear = originYear, DevelopmentYear = originYear, Value = 5 };
+            var claim4 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 3, Value = 15 };
+
+            var incrementalData = new List<Claim> { claim1, claim4 };
+
+            // Act
+            var result = (await service.GetCumulativeData(incrementalData)).ToList();
+
+            // Assert
+            var claim1Cumulative = result.First(c =>
+                c.OriginYear == claim1.OriginYear &&
+                c.DevelopmentYear == claim1.DevelopmentYear);
+
+            var claim2Cumulative = result.First(c =>
+                c.OriginYear == originYear &&
+                c.DevelopmentYear == originYear + 1);
+
+            var claim3Cumulative = result.First(c =>
+                c.OriginYear == originYear &&
+                c.DevelopmentYear == originYear + 2);
+
+            var claim4Cumulative = result.First(c =>
+                c.OriginYear == claim4.OriginYear &&
+                c.DevelopmentYear == claim4.DevelopmentYear);
+
+            Assert.AreEqual(claim1.Value, claim1Cumulative.Value);
+            Assert.AreEqual(claim1.Value, claim2Cumulative.Value);
+            Assert.AreEqual(claim1.Value, claim3Cumulative.Value);
+            Assert.AreEqual(claim1.Value + claim4.Value, claim4Cumulative.Value);
+        }
     }
 }

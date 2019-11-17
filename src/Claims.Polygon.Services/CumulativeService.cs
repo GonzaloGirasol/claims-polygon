@@ -46,10 +46,10 @@ namespace Claims.Polygon.Services
                 if (claim.OriginYear < claim.DevelopmentYear)
                 {
                     // find the previous development year
-                    var previousClaim = cumulativeData.SingleOrDefault(c =>
-                        c.Type == claim.Type &&
-                        c.OriginYear == claim.OriginYear &&
-                        c.DevelopmentYear == claim.DevelopmentYear - 1);
+                    var previousClaim = GetPreviousDevelopmentYear(claim.Type, 
+                        claim.OriginYear, 
+                        claim.DevelopmentYear,
+                        cumulativeData);
 
                     cumulativeValue += previousClaim?.Value;
                 }
@@ -64,6 +64,58 @@ namespace Claims.Polygon.Services
             }
 
             return cumulativeData;
+        }
+
+        /// <summary>
+        /// Get the previous development year. If it does not exist,
+        /// recursively go back by each development year until it's found. 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="originYear"></param>
+        /// <param name="developmentYear"></param>
+        /// <param name="cumulativeData"></param>
+        /// <returns></returns>
+        private static Claim GetPreviousDevelopmentYear(ProductType type, 
+            int originYear, 
+            int developmentYear,
+            ICollection<Claim> cumulativeData)
+
+        {
+            var previousDevelopmentYear = developmentYear - 1;
+
+            if (originYear > previousDevelopmentYear)
+            {
+                return null;
+            }
+
+            // find the previous development year
+            var previousClaim = cumulativeData.SingleOrDefault(c =>
+                c.Type == type &&
+                c.OriginYear == originYear &&
+                c.DevelopmentYear == previousDevelopmentYear);
+
+            if (previousClaim != null)
+            {
+                return previousClaim;
+            }
+
+            previousClaim = GetPreviousDevelopmentYear(type, 
+                originYear,
+                previousDevelopmentYear, 
+                cumulativeData);
+
+            var newPreviousClaim = new Claim
+            {
+                OriginYear = previousClaim.OriginYear,
+                DevelopmentYear = previousDevelopmentYear,
+                Type = previousClaim.Type,
+                Value = previousClaim.Value
+            };
+
+            cumulativeData.Add(newPreviousClaim);
+
+            return newPreviousClaim;
+
         }
     }
 }
