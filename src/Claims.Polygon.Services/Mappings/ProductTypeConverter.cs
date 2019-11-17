@@ -31,7 +31,7 @@ namespace Claims.Polygon.Services.Mappings
                 .GetName();
         }
 
-        private IDictionary GetEnumDisplayNames()
+        private static IDictionary GetEnumDisplayNames()
         {
             IDictionary displayNameMapping = new Dictionary<string, ProductType>();
 
