@@ -17,7 +17,7 @@ namespace Claims.Polygon.Tests.Unit.Services
             var service = new CsvService();
 
             var fileMock = new Mock<IFormFile>();
- 
+
             const string content = @"
                             Product, Origin Year, Development Year, Incremental Value
                             Comp, 1992, 1992, 110.0";

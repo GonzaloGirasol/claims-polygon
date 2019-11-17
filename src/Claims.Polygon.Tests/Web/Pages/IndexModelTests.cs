@@ -21,7 +21,7 @@ namespace Claims.Polygon.Tests.Unit.Web.Pages
             var csvService = new Mock<ICsvService>(MockBehavior.Strict);
             var cumulativeService = new Mock<ICumulativeService>(MockBehavior.Strict);
             var page = new IndexModel(csvService.Object, cumulativeService.Object);
-            
+
             // Act
             var result = page.OnGet();
 
@@ -35,9 +35,9 @@ namespace Claims.Polygon.Tests.Unit.Web.Pages
             // Arrange
             var csvService = new Mock<ICsvService>(MockBehavior.Strict);
             var cumulativeService = new Mock<ICumulativeService>(MockBehavior.Strict);
-            var page = new IndexModel(csvService.Object, cumulativeService.Object) {CsvFile = GetCsvFile()};
+            var page = new IndexModel(csvService.Object, cumulativeService.Object) { CsvFile = GetCsvFile() };
 
-            var incrementalData = new List<Claim> {new Claim()};
+            var incrementalData = new List<Claim> { new Claim() };
             var cumulativeData = new CumulativeData();
 
             csvService.Setup(cs => cs.GetIncrementalClaims(page.CsvFile))
@@ -46,7 +46,7 @@ namespace Claims.Polygon.Tests.Unit.Web.Pages
                 .ReturnsAsync(new byte[1]);
             cumulativeService.Setup(cs => cs.GetCumulativeData(incrementalData))
                 .ReturnsAsync(cumulativeData);
-            
+
             // Act
             var result = await page.OnPostAsync();
 

@@ -26,7 +26,7 @@ namespace Claims.Polygon.Services
                 {
                     return csvReader.GetRecords<Claim>().ToList();
                 }
-                catch (CsvHelperException) 
+                catch (CsvHelperException)
                 {
                     // TO-DO: Better error handling.
                     return null;

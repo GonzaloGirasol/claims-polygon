@@ -37,7 +37,7 @@ namespace Claims.Polygon.Services
         {
             var cumulativeData = new List<Claim>();
 
-            var groupedClaims = incrementalData.GroupBy(data => new {data.Type, data.OriginYear});
+            var groupedClaims = incrementalData.GroupBy(data => new { data.Type, data.OriginYear });
             foreach (var group in groupedClaims)
             {
                 await Task.Run(() =>
@@ -64,8 +64,8 @@ namespace Claims.Polygon.Services
                 if (claim.OriginYear < claim.DevelopmentYear)
                 {
                     // find the previous development year
-                    var previousClaim = GetPreviousDevelopmentYear(claim.Type, 
-                        claim.OriginYear, 
+                    var previousClaim = GetPreviousDevelopmentYear(claim.Type,
+                        claim.OriginYear,
                         claim.DevelopmentYear,
                         cumulativeData);
 
@@ -93,8 +93,8 @@ namespace Claims.Polygon.Services
         /// <param name="developmentYear"></param>
         /// <param name="cumulativeData"></param>
         /// <returns></returns>
-        private static Claim GetPreviousDevelopmentYear(ProductType type, 
-            int originYear, 
+        private static Claim GetPreviousDevelopmentYear(ProductType type,
+            int originYear,
             int developmentYear,
             ICollection<Claim> cumulativeData)
 
@@ -117,9 +117,9 @@ namespace Claims.Polygon.Services
                 return previousClaim;
             }
 
-            previousClaim = GetPreviousDevelopmentYear(type, 
+            previousClaim = GetPreviousDevelopmentYear(type,
                 originYear,
-                previousDevelopmentYear, 
+                previousDevelopmentYear,
                 cumulativeData);
 
             var newPreviousClaim = new Claim
@@ -151,10 +151,10 @@ namespace Claims.Polygon.Services
 
             var groupedClaims = cumulativeClaims.GroupBy(data => data.Type);
             var cumulativeYears = cumulativeClaims
-                .GroupBy(data => new {data.OriginYear, data.DevelopmentYear})
+                .GroupBy(data => new { data.OriginYear, data.DevelopmentYear })
                 .Select(g => new CumulativeYear
                 {
-                    OriginYear = g.Key.OriginYear, 
+                    OriginYear = g.Key.OriginYear,
                     DevelopmentYear = g.Key.DevelopmentYear
                 });
 
@@ -170,7 +170,7 @@ namespace Claims.Polygon.Services
             return cumulativeValues;
         }
 
-        private static CumulativeValue GetCumulativeDataForType(ProductType type, 
+        private static CumulativeValue GetCumulativeDataForType(ProductType type,
             IEnumerable<Claim> cumulativeByType,
             IEnumerable<CumulativeYear> cumulativeYears)
         {
@@ -179,10 +179,10 @@ namespace Claims.Polygon.Services
                 .ThenBy(y => y.DevelopmentYear);
 
             var values = orderedYears
-                .Select(year => 
-                    cumulativeByType.SingleOrDefault(c => 
-                        c.Type == type && 
-                        c.OriginYear == year.OriginYear && 
+                .Select(year =>
+                    cumulativeByType.SingleOrDefault(c =>
+                        c.Type == type &&
+                        c.OriginYear == year.OriginYear &&
                         c.DevelopmentYear == year.DevelopmentYear))
                 .Select(claim => claim?.Value ?? 0).ToList();
 

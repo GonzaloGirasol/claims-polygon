@@ -1,5 +1,4 @@
 ﻿using Claims.Polygon.Core.Csv;
-using Claims.Polygon.Core.Enums;
 using CsvHelper.Configuration;
 
 namespace Claims.Polygon.Services.Mappings

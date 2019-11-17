@@ -39,7 +39,7 @@ namespace Claims.Polygon.Tests.Unit.Services
             var claim3 = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 2, Value = 15, Type = ProductType.Comp };
 
             // Act
-            var result = await service.GetCumulativeData(new List<Claim> {claim1, claim2, claim3});
+            var result = await service.GetCumulativeData(new List<Claim> { claim1, claim2, claim3 });
 
             // Assert
             Assert.That(result.Header.MinOriginYear, Is.EqualTo(originYear));
@@ -64,7 +64,7 @@ namespace Claims.Polygon.Tests.Unit.Services
             // Assert
             var expectedValues = new List<double>
             {
-                claim1.Value.Value, 
+                claim1.Value.Value,
                 claim1.Value.Value + claim2.Value.Value,
                 claim1.Value.Value + claim2.Value.Value + claim3.Value.Value
             };
@@ -86,7 +86,7 @@ namespace Claims.Polygon.Tests.Unit.Services
             var claimA = new Claim { OriginYear = originYear, DevelopmentYear = originYear, Value = 5, Type = ProductType.NonComp };
             var claimB = new Claim { OriginYear = originYear, DevelopmentYear = originYear + 1, Value = 10, Type = ProductType.NonComp };
 
-            var incrementalData = new List<Claim> {claim1, claim2, claimA, claimB};
+            var incrementalData = new List<Claim> { claim1, claim2, claimA, claimB };
 
             var expectedCount = incrementalData.GroupBy(data => data.Type).Select(g => g.Key).Count();
 
@@ -144,8 +144,8 @@ namespace Claims.Polygon.Tests.Unit.Services
             var claimA = new Claim { OriginYear = originYear2, DevelopmentYear = originYear2, Value = 5, Type = ProductType.NonComp };
             var claimB = new Claim { OriginYear = originYear2, DevelopmentYear = originYear2 + 1, Value = 10, Type = ProductType.NonComp };
 
-            var incrementComps = new List<Claim> {claim1, claim2, claim3};
-            var incrementNonComps = new List<Claim> {claimA, claimB};
+            var incrementComps = new List<Claim> { claim1, claim2, claim3 };
+            var incrementNonComps = new List<Claim> { claimA, claimB };
 
             // Act
             var result = await service.GetCumulativeData(incrementComps.Concat(incrementNonComps));
@@ -217,8 +217,8 @@ namespace Claims.Polygon.Tests.Unit.Services
             var result = (await service.GetCumulativeClaims(incrementalData)).ToList();
 
             // Assert
-            var claim1Cumulative = result.First(c => 
-                c.Type == claim1.Type && 
+            var claim1Cumulative = result.First(c =>
+                c.Type == claim1.Type &&
                 c.OriginYear == claim1.OriginYear &&
                 c.DevelopmentYear == claim1.DevelopmentYear);
 
@@ -356,16 +356,16 @@ namespace Claims.Polygon.Tests.Unit.Services
             const int originYear2 = 3000;
 
             var claim1 = new Claim
-                {OriginYear = originYear1, DevelopmentYear = originYear1, Value = 5, Type = ProductType.Comp};
+            { OriginYear = originYear1, DevelopmentYear = originYear1, Value = 5, Type = ProductType.Comp };
             var claim2 = new Claim
-                {OriginYear = originYear1, DevelopmentYear = originYear1 + 1, Value = 10, Type = ProductType.Comp};
+            { OriginYear = originYear1, DevelopmentYear = originYear1 + 1, Value = 10, Type = ProductType.Comp };
             var claim3 = new Claim
-                {OriginYear = originYear1, DevelopmentYear = originYear1 + 2, Value = 15, Type = ProductType.Comp};
+            { OriginYear = originYear1, DevelopmentYear = originYear1 + 2, Value = 15, Type = ProductType.Comp };
 
             var claimA = new Claim
-                {OriginYear = originYear2, DevelopmentYear = originYear2, Value = 50, Type = ProductType.NonComp};
+            { OriginYear = originYear2, DevelopmentYear = originYear2, Value = 50, Type = ProductType.NonComp };
             var claimB = new Claim
-                {OriginYear = originYear2, DevelopmentYear = originYear2 + 1, Value = 100, Type = ProductType.NonComp};
+            { OriginYear = originYear2, DevelopmentYear = originYear2 + 1, Value = 100, Type = ProductType.NonComp };
 
             var incrementalData = new List<Claim>
             {
@@ -428,7 +428,7 @@ namespace Claims.Polygon.Tests.Unit.Services
 
             // Act
             var result = (await service.GetCumulativeClaims(incrementalData)).ToList();
-            
+
             // Assert
             var claim1Cumulative = result.First(c =>
                 c.OriginYear == claim1.OriginYear &&

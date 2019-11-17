@@ -55,7 +55,7 @@ namespace Claims.Polygon.Web.Pages
             var memoryStream = new MemoryStream(temp);
 
             return new FileStreamResult(memoryStream, FileUpload.CsvContentType)
-                {FileDownloadName = FileUpload.CumulativeCsvFileName};
+            { FileDownloadName = FileUpload.CumulativeCsvFileName };
         }
     }
 }
