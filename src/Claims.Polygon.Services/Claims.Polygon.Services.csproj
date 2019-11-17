@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="12.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Moq" Version="4.13.1" />
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Claims.Polygon.Tests.Unit</_Parameter1>
     </AssemblyAttribute>

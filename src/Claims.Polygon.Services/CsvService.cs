@@ -20,7 +20,18 @@ namespace Claims.Polygon.Services
             using var csvReader = new CsvReader(streamReader);
             csvReader.Configuration.RegisterClassMap<ClaimMap>();
 
-            var result = await Task.Run(() => csvReader.GetRecords<Claim>().ToList());
+            var result = await Task.Run(() =>
+            {
+                try
+                {
+                    return csvReader.GetRecords<Claim>().ToList();
+                }
+                catch (CsvHelperException) 
+                {
+                    // TO-DO: Better error handling.
+                    return null;
+                }
+            });
 
             return result;
         }
