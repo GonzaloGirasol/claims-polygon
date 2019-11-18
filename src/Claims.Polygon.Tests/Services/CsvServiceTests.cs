@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Claims.Polygon.Core.Enums;
+using Claims.Polygon.Core.Exceptions;
 using Claims.Polygon.Services;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -44,7 +46,7 @@ namespace Claims.Polygon.Tests.Unit.Services
         }
 
         [Test]
-        public async Task GetIncrementalClaims_InvalidInput_ReturnsNull()
+        public void GetIncrementalClaims_InvalidInput_ReturnsNull()
         {
             // Arrange
             var service = new CsvService();
@@ -71,10 +73,11 @@ namespace Claims.Polygon.Tests.Unit.Services
             var file = fileMock.Object;
 
             // Act
-            var result = await service.GetIncrementalClaims(file);
+            Task AsyncTest() => service.GetIncrementalClaims(file);
 
             // Assert
-            Assert.Null(result);
+            var ex = Assert.ThrowsAsync<CsvException>(AsyncTest);
+            Assert.AreEqual(CsvExceptionType.FailedToRead, ex.Type);
         }
     }
 }
