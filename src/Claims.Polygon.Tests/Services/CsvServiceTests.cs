@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Claims.Polygon.Core.Csv;
 using Claims.Polygon.Core.Enums;
 using Claims.Polygon.Core.Exceptions;
 using Claims.Polygon.Services;
@@ -46,7 +48,7 @@ namespace Claims.Polygon.Tests.Unit.Services
         }
 
         [Test]
-        public void GetIncrementalClaims_InvalidInput_ReturnsNull()
+        public void GetIncrementalClaims_InvalidInput_ThrowsException()
         {
             // Arrange
             var service = new CsvService();
@@ -78,6 +80,47 @@ namespace Claims.Polygon.Tests.Unit.Services
             // Assert
             var ex = Assert.ThrowsAsync<CsvException>(AsyncTest);
             Assert.AreEqual(CsvExceptionType.FailedToRead, ex.Type);
+        }
+
+        [Test]
+        public async Task GetCumulativeCsv_ValidInput_ReturnsByteArray()
+        {
+            // Arrange
+            var service = new CsvService();
+
+            var cumulativeData = new CumulativeData
+            {
+                Header = new CumulativeHeader {MinOriginYear = 2000, DevelopmentYears = 5},
+                CumulativeValues = new List<CumulativeValue>
+                {
+                    new CumulativeValue
+                    {
+                        Type = ProductType.Comp,
+                        Values = new List<double> {1, 2, 3}
+                    }
+                }
+            };
+
+            // Act
+            var result = await service.GetCumulativeCsv(cumulativeData);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(result.Length > 0);
+        }
+
+        [Test]
+        public void GetCumulativeCsv_InvalidInput_ThrowsException()
+        {
+            // Arrange
+            var service = new CsvService();
+
+            // Act
+            Task AsyncTest() => service.GetCumulativeCsv(null);
+
+            // Assert
+            var ex = Assert.ThrowsAsync<CsvException>(AsyncTest);
+            Assert.AreEqual(CsvExceptionType.FailedToWrite, ex.Type);
         }
     }
 }
