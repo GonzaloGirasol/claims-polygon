@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Claims.Polygon.Core;
 using Claims.Polygon.Core.Csv;
+using Claims.Polygon.Core.Enums;
+using Claims.Polygon.Core.Exceptions;
 using Claims.Polygon.Services.Interfaces;
 using Claims.Polygon.Services.Mappings;
 using CsvHelper;
@@ -26,10 +29,10 @@ namespace Claims.Polygon.Services
                 {
                     return csvReader.GetRecords<Claim>().ToList();
                 }
-                catch (CsvHelperException)
+                catch (CsvHelperException ex)
                 {
-                    // TO-DO: Better error handling.
-                    return null;
+                    throw new CsvException(CsvExceptionType.FailedToRead, 
+                        "There was problem reading the file", ex);
                 }
             });
 
@@ -38,25 +41,33 @@ namespace Claims.Polygon.Services
 
         public async Task<byte[]> GetCumulativeCsv(CumulativeData cumulativeData)
         {
-            await using var memoryStream = new MemoryStream();
-            await using var writer = new StreamWriter(memoryStream);
-
-            using var csvWriter = new CsvWriter(writer);
-            csvWriter.Configuration.HasHeaderRecord = false;
-            csvWriter.Configuration.RegisterClassMap<CumulativeValueMap>();
-
-            csvWriter.WriteRecord(cumulativeData.Header);
-            await csvWriter.NextRecordAsync();
-
-            foreach (var value in cumulativeData.CumulativeValues)
+            try
             {
-                csvWriter.WriteRecord(value);
+                await using var memoryStream = new MemoryStream();
+                await using var writer = new StreamWriter(memoryStream);
+
+                using var csvWriter = new CsvWriter(writer);
+                csvWriter.Configuration.HasHeaderRecord = false;
+                csvWriter.Configuration.RegisterClassMap<CumulativeValueMap>();
+
+                csvWriter.WriteRecord(cumulativeData.Header);
                 await csvWriter.NextRecordAsync();
+
+                foreach (var value in cumulativeData.CumulativeValues)
+                {
+                    csvWriter.WriteRecord(value);
+                    await csvWriter.NextRecordAsync();
+                }
+
+                await writer.FlushAsync();
+
+                return memoryStream.ToArray();
             }
-
-            await writer.FlushAsync();
-
-            return memoryStream.ToArray();
+            catch (Exception ex)
+            {
+                throw new CsvException(CsvExceptionType.FailedToWrite,
+                    "There was problem creating the cumulative file", ex);
+            }
         }
     }
 }
