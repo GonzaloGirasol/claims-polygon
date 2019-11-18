@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Claims.Polygon.Core.Constants;
+using Claims.Polygon.Core.Exceptions;
 using Claims.Polygon.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,16 +47,29 @@ namespace Claims.Polygon.Web.Pages
                 return Page();
             }
 
-            var incrementalClaims = await _csvService.GetIncrementalClaims(CsvFile);
+            try
+            {
+                var incrementalClaims = await _csvService.GetIncrementalClaims(CsvFile);
 
-            var cumulativeData = await _cumulativeService.GetCumulativeData(incrementalClaims);
+                var cumulativeData = await _cumulativeService.GetCumulativeData(incrementalClaims);
 
-            var temp = await _csvService.GetCumulativeCsv(cumulativeData);
+                var temp = await _csvService.GetCumulativeCsv(cumulativeData);
 
-            var memoryStream = new MemoryStream(temp);
+                var memoryStream = new MemoryStream(temp);
 
-            return new FileStreamResult(memoryStream, FileUpload.CsvContentType)
-            { FileDownloadName = FileUpload.CumulativeCsvFileName };
+                return new FileStreamResult(memoryStream, FileUpload.CsvContentType)
+                    {FileDownloadName = FileUpload.CumulativeCsvFileName};
+            }
+            catch (CsvException csvException)
+            {
+                ModelState.AddModelError("CsvFile", csvException.Message);
+                return Page();
+            }
+            catch (CumulativeException)
+            {
+                ModelState.AddModelError("CsvFile", "There was a problem calculating the cumulative data");
+                return Page();
+            }
         }
     }
 }

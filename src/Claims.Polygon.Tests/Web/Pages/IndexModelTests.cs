@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Claims.Polygon.Core;
 using Claims.Polygon.Core.Constants;
 using Claims.Polygon.Core.Csv;
+using Claims.Polygon.Core.Enums;
+using Claims.Polygon.Core.Exceptions;
 using Claims.Polygon.Services.Interfaces;
 using Claims.Polygon.Web.Pages;
 using Microsoft.AspNetCore.Http;
@@ -128,6 +130,85 @@ namespace Claims.Polygon.Tests.Unit.Web.Pages
                 .ReturnsAsync(new byte[1]);
             cumulativeService.Setup(cs => cs.GetCumulativeData(incrementalData))
                 .ReturnsAsync(cumulativeData);
+
+            // Act
+            await page.OnPostAsync();
+
+            // Assert
+            Assert.False(page.ModelState.IsValid);
+            Assert.True(page.ModelState.ErrorCount == 1);
+        }
+
+        [Test]
+        public async Task OnPostAsync_ShowsError_IfCsvServiceFailsToReadFile()
+        {
+            // Arrange
+            var csvService = new Mock<ICsvService>(MockBehavior.Strict);
+            var cumulativeService = new Mock<ICumulativeService>(MockBehavior.Strict);
+            var page = new IndexModel(csvService.Object, cumulativeService.Object) { CsvFile = GetCsvFile() };
+
+            var incrementalData = new List<Claim> { new Claim() };
+            var cumulativeData = new CumulativeData();
+
+            csvService.Setup(cs => cs.GetIncrementalClaims(page.CsvFile))
+                .ThrowsAsync(new CsvException(CsvExceptionType.FailedToRead, "Failed to read file"));
+            csvService.Setup(cs => cs.GetCumulativeCsv(cumulativeData))
+                .ReturnsAsync(new byte[1]);
+            cumulativeService.Setup(cs => cs.GetCumulativeData(incrementalData))
+                .ReturnsAsync(cumulativeData);
+
+            // Act
+            await page.OnPostAsync();
+
+            // Assert
+            Assert.False(page.ModelState.IsValid);
+            Assert.True(page.ModelState.ErrorCount == 1);
+        }
+
+        [Test]
+        public async Task OnPostAsync_ShowsError_IfCsvServiceFailsToWriteFile()
+        {
+            // Arrange
+            var csvService = new Mock<ICsvService>(MockBehavior.Strict);
+            var cumulativeService = new Mock<ICumulativeService>(MockBehavior.Strict);
+            var page = new IndexModel(csvService.Object, cumulativeService.Object) { CsvFile = GetCsvFile() };
+
+            var incrementalData = new List<Claim> { new Claim() };
+            var cumulativeData = new CumulativeData();
+
+            csvService.Setup(cs => cs.GetIncrementalClaims(page.CsvFile))
+                .ReturnsAsync(incrementalData);
+            csvService.Setup(cs => cs.GetCumulativeCsv(cumulativeData))
+                .ThrowsAsync(new CsvException(CsvExceptionType.FailedToWrite, "Failed to write file"));
+            cumulativeService.Setup(cs => cs.GetCumulativeData(incrementalData))
+                .ReturnsAsync(cumulativeData);
+
+            // Act
+            await page.OnPostAsync();
+
+            // Assert
+            Assert.False(page.ModelState.IsValid);
+            Assert.True(page.ModelState.ErrorCount == 1);
+        }
+
+        [Test]
+        public async Task OnPostAsync_ShowsError_IfCumulativeServiceThrowsException()
+        {
+            // Arrange
+            var csvService = new Mock<ICsvService>(MockBehavior.Strict);
+            var cumulativeService = new Mock<ICumulativeService>(MockBehavior.Strict);
+            var page = new IndexModel(csvService.Object, cumulativeService.Object) { CsvFile = GetCsvFile() };
+
+            var incrementalData = new List<Claim> { new Claim() };
+            var cumulativeData = new CumulativeData();
+
+            csvService.Setup(cs => cs.GetIncrementalClaims(page.CsvFile))
+                .ReturnsAsync(incrementalData);
+            csvService.Setup(cs => cs.GetCumulativeCsv(cumulativeData))
+                .ReturnsAsync(new byte[1]);
+            cumulativeService.Setup(cs => cs.GetCumulativeData(incrementalData))
+                .ThrowsAsync(new CumulativeException(CumulativeExceptionType.InvalidInput,
+                    "Error calculating cumulative data"));
 
             // Act
             await page.OnPostAsync();
